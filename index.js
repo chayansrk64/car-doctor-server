@@ -59,7 +59,7 @@ const verifyJWT = (req, res, next) => {
     // step: 3
     jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (error, decoded) => {
         if(error){
-            return  res.status(403).send({error:true, message: "Unauthorized access"})
+            return  res.status(401).send({error:true, message: "Unauthorized access"})
         }
         req.decoded = decoded;
         next()
@@ -110,6 +110,9 @@ async function run() {
     app.get('/bookings', verifyJWT, async(req, res) => {
         const decoded = req.decoded;
         
+        if(decoded.email !== req.query.email){
+          return res.status(403).send({error:1, message: "forbiden access"})
+        }
         // console.log(req.headers.authorization);
         console.log('After veryfity jwt token', decoded);
         let query = {};
