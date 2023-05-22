@@ -88,7 +88,20 @@ async function run() {
 
     // SERVICE ROUTE
     app.get('/services', async(req, res)=> {
-        const cursor = serviceCollection.find()
+        const sort = req.query.sort;
+        const search = req.query.search;
+        console.log(search);
+        // const query = {}
+        const query = {title: {$regex: search, $options: 'i'}}
+
+        // const query = { price: {$eq:150} };
+        // const query = { price: { $lte: 150, $gte:50 } }; // this sort will give you price range(50 to 150)
+        const options = {
+          // sort matched documents in ascending order by rating
+          sort: { "price": sort === 'ascending' ? 1 : -1 },
+          
+        };
+        const cursor = serviceCollection.find(query, options)
         const result = await cursor.toArray()
         res.send(result);
     })
